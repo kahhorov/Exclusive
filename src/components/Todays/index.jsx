@@ -3,6 +3,7 @@ import Animate from "../Animate"
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6"
 import RealTime from "../RealTime"
 import Products from "../products"
+import CustomButton from '../Button'
 
 function Todays() {
     return (
@@ -19,6 +20,7 @@ function Todays() {
                 </div>
             </div>
             <Products />
+            <div className='w-full text-center py-10'> <CustomButton text="View All Products" /></div>
         </div>
     )
 }
