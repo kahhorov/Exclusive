@@ -1,5 +1,5 @@
 import React from 'react'
-import speaker from '../../assets/Speaker.png'
+import speaker from '../../assets/speaker.png'
 import RealTime from '../RealTime'
 
 function Speaker() {
