@@ -1,19 +1,18 @@
 import { Card, Text } from 'rsuite';
 import Rating from '../Rating';
+import ProductImage from '../ProductImage';
 
-function CustomCard({ products }) {
+function CustomCard({ products, category }) {
+    const filterProducts = products?.filter(
+        (p) => p.category === category
+    );
     return (
         <>
-            {products?.map((p) => {
+
+            {filterProducts.map((p) => {
                 return (
-                    <Card key={p.id} className='h-full flex flex-col justify-start items-stretch border-none!'>
-                        <div className="w-full h-[288px] shrink-0 p-2 bg-gray-100 flex items-center justify-center">
-                            <img
-                                src={p.img}
-                                alt={p.title}
-                                className="w-full h-full object-contain"
-                            />
-                        </div>
+                    <Card key={p.id} className='group h-full flex flex-col justify-start items-stretch border-none!'>
+                        <ProductImage src={p.img} alt={p.title} isNew={p.isNew} discount={p.discount} />
                         <div className="w-full text-start">
                             <Card.Header>
                                 <Text size="md">

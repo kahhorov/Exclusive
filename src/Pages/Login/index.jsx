@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import sideImage from '../../assets/side-image.png'
-import googleIcon from '../../assets/icon-google.png'
 
-function SignUp() {
-    const [form, setForm] = useState({ fullName: "", email: "", password: "" })
+function Login() {
+    const [form, setForm] = useState({ email: "", password: "" })
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value })
@@ -12,11 +10,10 @@ function SignUp() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const fullName = form.fullName
         const email = form.email
         const password = form.password
 
-        if (fullName.trim() === "" || email.trim() === "" || password.trim() === "") {
+        if (email.trim() === "" || password.trim() === "") {
             alert("Barcha maydonni to'ldiring!");
         } else if (password.trim().length < 5) {
             alert("Parol kamida 5 ta belgidan iborat bo'lsin!");
@@ -24,31 +21,24 @@ function SignUp() {
             alert("Parolda kamida 1 ta raqam ishtirok etsin!");
         } else {
             console.log(form);
-            setForm({ fullName: "", email: "", password: "" })
+            setForm({ email: "", password: "" })
         }
     }
+
     return (
         <div className='lg:flex items-center gap-16 xl:gap-32 mb-10 pt-10 lg:mb-16 border-gray-300 border-t'>
             <div className="lg:w-1/2">
-                <img src={sideImage} alt="Sign up" className='w-full object-cover' />
+                <img src={sideImage} alt="Log in" className='w-full object-cover' />
             </div>
 
             <div className="lg:w-1/2 flex justify-center px-6 mt-10 lg:mt-0">
                 <form onSubmit={handleSubmit} className='w-full max-w-[23.5rem] flex flex-col gap-8'>
                     <div className="flex flex-col gap-4">
-                        <h2 className='text-3xl lg:text-4xl font-medium tracking-[0.06em]'>Create an account</h2>
+                        <h2 className='text-3xl lg:text-4xl font-medium tracking-[0.06em]'>Log in to Exclusive</h2>
                         <p className='text-base'>Enter your details below</p>
                     </div>
 
                     <div className="flex flex-col gap-10">
-                        <input
-                            type="text"
-                            name="fullName"
-                            value={form.fullName}
-                            onChange={handleChange}
-                            placeholder='full Name'
-                            className='border-b border-black/30 pb-2 outline-none placeholder:text-black/40 focus:border-black'
-                        />
                         <input
                             type="email"
                             name="email"
@@ -58,7 +48,7 @@ function SignUp() {
                             className='border-b border-black/30 pb-2 outline-none placeholder:text-black/40 focus:border-black'
                         />
                         <input
-                            type="text"
+                            type="password"
                             name="password"
                             value={form.password}
                             onChange={handleChange}
@@ -67,25 +57,19 @@ function SignUp() {
                         />
                     </div>
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between gap-4">
                         <button
                             type='submit'
-                            className='bg-secondary-10 py-4 !rounded-sm !text-white cursor-pointer'
+                            className='bg-secondary-10 py-4 px-12 !rounded-sm !text-white cursor-pointer'
                         >
-                            Create Account
+                            Log In
                         </button>
                         <button
                             type='button'
-                            className='flex items-center justify-center gap-4 py-4  border-gray-300 !border !rounded-sm cursor-pointer'
+                            className='text-secondary-10 cursor-pointer'
                         >
-                            <img src={googleIcon} alt="Google" className='w-6 h-6' />
-                            Sign up with Google
+                            Forget Password?
                         </button>
-                    </div>
-
-                    <div className="flex items-center justify-center gap-4">
-                        <p className='text-black/70'>Already have account?</p>
-                        <Link to="/login" className='font-medium border-b border-black/40 pb-1'>Log in</Link>
                     </div>
                 </form>
             </div>
@@ -93,4 +77,4 @@ function SignUp() {
     )
 }
 
-export default SignUp
+export default Login
