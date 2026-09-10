@@ -6,6 +6,11 @@ import About from './Pages/About'
 import Contact from './Pages/Contact'
 import SignUp from './Pages/SignUp'
 import Login from './Pages/Login'
+import Wishlist from './Pages/Wishlist'
+import Cart from './Pages/Cart'
+import CheckOut from './Pages/CheckOut'
+import Error404 from './Pages/Error404'
+import Account from './Pages/Account'
 
 const router = createBrowserRouter([
   {
@@ -25,12 +30,36 @@ const router = createBrowserRouter([
         element: <Contact />
       },
       {
+        path: "/wishlist",
+        element: <Wishlist />
+      },
+      {
+        path: "/cart",
+        element: <Cart />
+      },
+      {
+        path: "/checkout",
+        element: <CheckOut />
+      },
+      {
+        path: "/account",
+        element: <Account />
+      },
+      {
+        path: "/contact",
+        element: <Contact />
+      },
+      {
         path: "/sign-up",
         element: <SignUp />
       },
       {
         path: "/login",
         element: <Login />
+      },
+      {
+        path: "*",
+        element: <Error404 />
       }
     ]
   }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { IoCartOutline, IoMenu } from 'react-icons/io5'
 import { CiHeart, CiSearch } from 'react-icons/ci'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Drawer } from 'rsuite'
 import CustomMenu from '../CustomMenu'
 
@@ -15,6 +15,7 @@ const navLinks = [
 function CustomNavbar() {
     const [open, setOpen] = useState(false)
     const location = useLocation()
+    const navigate = useNavigate()
 
 
     return (
@@ -38,8 +39,16 @@ function CustomNavbar() {
                 </div>
                 {location.pathname !== "/sign-up" && location.pathname !== "/login" ?
                     <>
-                        <button><CiHeart size={22} /></button>
-                        <button><IoCartOutline size={22} /></button>
+                        <button onClick={() => navigate("wishlist")}><CiHeart size={22} />
+                            <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 py-[.100rem] text-xs font-medium text-red-100 absolute top-3">
+                                99+
+                            </span>
+                        </button>
+                        <button onClick={() => navigate("cart")}><IoCartOutline size={22} />
+                            <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 py-[.100rem] text-xs font-medium text-red-100 absolute top-3">
+                                99+
+                            </span>
+                        </button>
                         <CustomMenu />
                     </>
                     : ""}

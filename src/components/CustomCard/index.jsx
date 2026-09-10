@@ -12,7 +12,7 @@ function CustomCard({ products, category }) {
             {filterProducts.map((p) => {
                 return (
                     <Card key={p.id} className='group h-full flex flex-col justify-start items-stretch border-none!'>
-                        <ProductImage src={p.img} alt={p.title} isNew={p.isNew} discount={p.discount} />
+                        <ProductImage src={p.img} alt={p.title} isNew={p.isNew} discount={p.discount} productId={p.id} />
                         <div className="w-full text-start">
                             <Card.Header>
                                 <Text size="md">
