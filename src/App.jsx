@@ -11,6 +11,7 @@ import Cart from './Pages/Cart'
 import CheckOut from './Pages/CheckOut'
 import Error404 from './Pages/Error404'
 import Account from './Pages/Account'
+import ProductDetaill from './Pages/ProductDetaill'
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "/contact",
         element: <Contact />
+      },
+      {
+        path: "/product/:id",
+        element: <ProductDetaill />
       },
       {
         path: "/sign-up",
