@@ -4,7 +4,8 @@ import ProductImage from '../ProductImage'
 import SectionBanner from '../SectionBanner'
 import CustomButton from '../Button'
 import Rating from '../Rating'
-import { products } from '../../Data'
+import api from '../../Axios/Api'
+import { useEffect, useState } from 'react'
 
 const colorCodes = {
     red: '#db4444',
@@ -16,27 +17,42 @@ const colorCodes = {
 
 
 function Explore() {
-    const newProducts = products?.filter((p) => p.category === "Explore")
+    const [newProducts, setNewProducts] = useState([])
+
+    async function getProducts() {
+        try {
+            const res = await api.get("product/list/")
+            setNewProducts(res.data || [])
+
+        } catch (error) {
+            console.log("error:" + error);
+        }
+    }
+
+    useEffect(() => {
+        getProducts()
+    }, [])
+
     return (
         <div className='py-10'>
             <Animate text="Our Products" minwidth={5} />
             <SectionBanner text="Explore Our Products" />
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 py-6">
-                {newProducts?.map((p) => {
+                {newProducts?.slice(8).map((p) => {
                     return (
                         <Card key={p.id} className='group h-full flex flex-col justify-start items-stretch border-none!'>
-                            <ProductImage src={p.img} alt={p.title} isNew={p.isNew} height={250} />
+                            <ProductImage img={p.pictures?.[0]} alt={p.title} discount={p.discount_percent} productId={p.id} height={250} />
                             <div className="w-full text-start">
                                 <Card.Header>
                                     <Text size="md">
-                                        {p.title}
+                                        {p.title?.split(" ").length > 5 ? p.title.split(" ").slice(0, 5).join(" ") + "..." : p.title}
                                     </Text>
                                 </Card.Header>
                             </div>
                             <Card.Body className='flex items-center gap-3 text-start w-full'>
-                                <span className='text-secondary-10'>${p.price}</span>
-                                {p.discountedPrice ? <span className='text-gray-400 line-through'>${p.discountedPrice}</span> : ""}
-                                <Rating value={p.reting} count={p.comment} />
+                                <span className='text-secondary-10'>${p.discount_price}</span>
+                                {p.discount_price !== p.price ? <span className='text-gray-400 line-through'>${p.price}</span> : ""}
+                                <Rating value={p.stars} count={p.review_quantity} />
                             </Card.Body>
                             <Card.Footer className='w-full text-start'>
                                 {p.colors && (

@@ -1,27 +1,38 @@
 import React, { useState } from 'react'
 import sideImage from '../../assets/side-image.png'
+import { toast } from 'react-toastify'
+import api from '../../Axios/Api'
+import { useNavigate } from 'react-router-dom'
 
 function Login() {
+    const navigate = useNavigate()
     const [form, setForm] = useState({ email: "", password: "" })
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        const email = form.email
-        const password = form.password
 
-        if (email.trim() === "" || password.trim() === "") {
-            alert("Barcha maydonni to'ldiring!");
-        } else if (password.trim().length < 5) {
-            alert("Parol kamida 5 ta belgidan iborat bo'lsin!");
-        } else if (!/\d/.test(password)) {
-            alert("Parolda kamida 1 ta raqam ishtirok etsin!");
-        } else {
-            console.log(form);
-            setForm({ email: "", password: "" })
+        try {
+            const res = await api.post("user/token/", {
+                email_or_phone: form.email,
+                password: form.password,
+            });
+            console.log(res);
+            toast.success("Muvaffaqiyatli kirdingiz");
+            navigate("/")
+
+            localStorage.setItem("token", res.data.access);
+        } catch (error) {
+            const data = error.response?.data;
+
+            if (data?.non_field_errors) {
+                toast.warning("Email yoki parol noto'g'ri");
+            } else {
+                toast.error("Xatolik yuz berdi");
+            }
         }
     }
 

@@ -1,31 +1,29 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import sideImage from '../../assets/side-image.png'
 import googleIcon from '../../assets/icon-google.png'
+import api from '../../Axios/Api'
+import { toast } from 'react-toastify'
 
 function SignUp() {
+    const navigate = useNavigate()
     const [form, setForm] = useState({ fullName: "", email: "", password: "" })
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        const fullName = form.fullName
-        const email = form.email
-        const password = form.password
-
-        if (fullName.trim() === "" || email.trim() === "" || password.trim() === "") {
-            alert("Barcha maydonni to'ldiring!");
-        } else if (password.trim().length < 5) {
-            alert("Parol kamida 5 ta belgidan iborat bo'lsin!");
-        } else if (!/\d/.test(password)) {
-            alert("Parolda kamida 1 ta raqam ishtirok etsin!");
-        } else {
-            console.log(form);
-            setForm({ fullName: "", email: "", password: "" })
+        try {
+            const res = await api.post("user/register/", { first_name: form.fullName, email_or_phone: form.email, password: form.password })
+            toast.success(res.data.message)
+            navigate("/login")
+        } catch (error) {
+            toast.warning("Bu hisob allaqachon ro'yxatdan o'tgan")
         }
+
+
     }
     return (
         <div className='lg:flex items-center gap-16 xl:gap-32 mb-10 pt-10 lg:mb-16 border-gray-300 border-t'>

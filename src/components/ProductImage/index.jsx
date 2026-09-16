@@ -1,42 +1,123 @@
 import { FaRegEye, FaRegHeart } from 'react-icons/fa6'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import api, { getImageUrl } from '../../Axios/Api'
 
-function ProductImage({ src, alt, isNew, height = 288, discount, productId }) {
+function ProductImage({
+    img,
+    src,
+    alt,
+    isNew,
+    height = 288,
+    discount,
+    productId
+}) {
+    const navigate = useNavigate()
 
-    function handleSaveHeart(id) {
-        console.log(id);
+    async function postWishlist(id) {
+        if (!localStorage.getItem("token")) {
+            toast.warning("Avval tizimga kiring")
+            navigate("/login")
+            return
+        }
+        try {
+            await api.post(`action/add-to-wishlist/?product_id=${id}`)
+            toast.success("Sevimlilarga qo'shildi")
+        } catch (error) {
+            console.log(error);
+            toast.error("Xatolik yuz berdi")
+        }
+    }
+
+    async function postCart(id) {
+        if (!localStorage.getItem("token")) {
+            toast.warning("Avval tizimga kiring")
+            navigate("/login")
+            return
+        }
+        try {
+            await api.post("order/add-to-cart/", {
+                product_id: id,
+                quantity: 1,
+                count: 1
+            })
+            toast.success("Savatga qo'shildi")
+        } catch (error) {
+            console.log(error);
+            toast.error("Xatolik yuz berdi")
+        }
+    }
+
+    function handleSaveHeart(id, e) {
+        e.stopPropagation()
+        e.preventDefault()
+        postWishlist(id)
     }
 
     return (
-        <Link to={`/product/${productId}`}>
-            <div
-                className="relative w-full shrink-0 p-2 bg-gray-100 flex items-center justify-center overflow-hidden"
-                style={{ height }}
-            >
-                {isNew && (
-                    <span className='absolute top-3 left-3 bg-green100 text-white text-xs px-3 py-1 rounded-sm'>NEW</span>
-                )}
-                {discount &&
-                    <span className='absolute top-3 left-3 bg-secondary-10 text-white text-xs px-3 py-1 rounded-sm'>-{discount}%</span>
-                }
-                <div className="absolute top-3 right-3 flex flex-col gap-2 ">
-                    <button onClick={() => handleSaveHeart(productId)} className='w-8 h-8 !rounded-full bg-white flex items-center justify-center hover:bg-secondary-10 hover:!text-white transition-colors duration-200'>
-                        <FaRegHeart />
-                    </button>
-                    <button className='w-8 h-8 !rounded-full bg-white flex items-center justify-center hover:bg-secondary-10 hover:!text-white transition-colors duration-200'>
-                        <FaRegEye />
-                    </button>
-                </div>
+        <div
+            className="relative w-full shrink-0 p-2 bg-gray-100 flex items-center justify-center overflow-hidden"
+            style={{ height }}
+        >
+
+            {/* <Link
+            to={`/product/${productId}`}
+            className="absolute inset-0"
+        /> */}
+
+            {isNew && (
+                <span className="absolute top-3 left-3 bg-green100 text-white text-xs px-3 py-1 rounded-sm z-10">
+                    NEW
+                </span>
+            )}
+
+            {discount && (
+                <span className="absolute top-3 left-3 bg-secondary-10 text-white text-xs px-3 py-1 rounded-sm z-10">
+                    -{discount}%
+                </span>
+            )}
+
+            <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
+
+                <button
+                    onClick={(e) => handleSaveHeart(productId, e)}
+                    className="w-8 h-8 !rounded-full bg-white flex items-center justify-center hover:bg-secondary-10 hover:!text-white transition-colors duration-200"
+                >
+                    <FaRegHeart />
+                </button>
+
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        e.preventDefault()
+                    }}
+                    className="w-8 h-8 !rounded-full bg-white flex items-center justify-center hover:bg-secondary-10 hover:!text-white transition-colors duration-200"
+                >
+                    <FaRegEye />
+                </button>
+
+            </div>
+
+            <Link to={`/product/detail/${productId}`} className="w-full h-full">
                 <img
-                    src={src}
+                    src={getImageUrl(img || src)}
                     alt={alt}
                     className="w-full h-full object-contain"
                 />
-                <button className='absolute bottom-0 left-0 w-full bg-black !text-white py-2 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-linear'>
-                    Add To Cart
-                </button>
-            </div>
-        </Link>
+            </Link>
+
+            <button
+                onClick={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    postCart(productId)
+                }}
+                className="absolute bottom-0 left-0 w-full bg-black !text-white py-2 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-linear z-20"
+            >
+                Add To Cart
+            </button>
+
+        </div>
     )
 }
 

@@ -1,18 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { IoTrashOutline } from "react-icons/io5";
 import { Breadcrumb } from "rsuite";
-import img1 from '../../assets/1.png'
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import api, { getImageUrl } from "../../Axios/Api";
 
 
 function Cart() {
-    const [count, setCount] = useState(0)
-    const price = 550;
-    const subtotal = price * count;
+    const [cartItems, setCartItems] = useState([])
+    const subtotal = cartItems.reduce((sum, item) => sum + Number(item.product?.discount_price || item.product?.price || 0) * item.quantity, 0);
     const shipping = 0;
     const total = subtotal + shipping;
 
     const navigate = useNavigate()
+
+    async function getCart() {
+        if (!localStorage.getItem("token")) {
+            toast.warning("Avval tizimga kiring")
+            navigate("/login")
+            return
+        }
+        try {
+            const res = await api.get("order/cart-items/")
+            setCartItems(res.data || [])
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function removeCart(id) {
+        try {
+            await api.delete(`order/remove-from-cart?cart_item_id=${id}`)
+            setCartItems(cartItems.filter((item) => item.id !== id))
+            toast.info("Savatdan o'chirildi")
+        } catch (error) {
+            console.log(error);
+            toast.error("Xatolik yuz berdi")
+        }
+    }
+
+    function changeCount(id, value) {
+        setCartItems(cartItems.map((item) => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + value) } : item))
+    }
+
+    useEffect(() => {
+        getCart()
+    }, [])
 
     return (
         <div className="border-gray-300 border-t">
@@ -33,17 +67,28 @@ function Cart() {
 
                 <div className="flex flex-col gap-5 mt-5">
 
-                    <div className="grid grid-cols-4 items-center py-6 px-8 rounded-lg bg-white shadow-sm">
+                    {cartItems.length === 0 && (
+                        <p className="py-10 text-center text-sm text-gray-400">Savat bo'sh</p>
+                    )}
+
+                    {cartItems.map((item) => {
+                        const price = Number(item.product?.discount_price || item.product?.price || 0)
+                        return (
+                    <div key={item.id} className="grid grid-cols-4 items-center py-6 px-8 rounded-lg bg-white shadow-sm">
 
                         <div className="flex items-center gap-4">
+                            <button onClick={() => removeCart(item.id)} className="text-gray-400 hover:text-red-500 transition">
+                                <IoTrashOutline size={18} />
+                            </button>
+
                             <img
-                                src={img1}
-                                alt="H1 Gamepad"
+                                src={getImageUrl(item.product?.pictures?.[0])}
+                                alt={item.product?.title}
                                 className="w-[60px] h-[60px] object-contain"
                             />
 
                             <p className="text-sm font-medium">
-                                H1 Gamepad
+                                {item.product?.title?.split(" ").length > 5 ? item.product.title.split(" ").slice(0, 5).join(" ") + "..." : item.product?.title}
                             </p>
                         </div>
 
@@ -55,21 +100,19 @@ function Cart() {
                             <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
 
                                 <button
-                                    onClick={() => setCount(count + 1)}
+                                    onClick={() => changeCount(item.id, 1)}
                                     className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition"
                                 >
                                     <FaPlus size={10} />
                                 </button>
 
                                 <span className="w-10 h-9 flex items-center justify-center border-x border-gray-300 text-sm">
-                                    {String(count).padStart(2, "0")}
+                                    {String(item.quantity).padStart(2, "0")}
                                 </span>
 
                                 <button
-                                    onClick={() =>
-                                        setCount(count > 0 ? count - 1 : 0)
-                                    }
-                                    disabled={count === 0}
+                                    onClick={() => changeCount(item.id, -1)}
+                                    disabled={item.quantity === 1}
                                     className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition disabled:text-gray-300 disabled:hover:bg-white"
                                 >
                                     <FaMinus size={10} />
@@ -79,15 +122,18 @@ function Cart() {
                         </div>
 
                         <p className="text-sm text-right">
-                            ${subtotal}
+                            ${(price * item.quantity).toFixed(2)}
                         </p>
 
                     </div>
+                        )
+                    })}
                 </div>
 
                 <div className="flex justify-between items-center mt-5">
 
                     <button
+                        onClick={() => navigate("/")}
                         className="px-7 py-3 border-gray-400 !border  !rounded-md text-sm
                     hover:bg-black hover:!text-white transition"
                     >
@@ -131,7 +177,7 @@ function Cart() {
 
                         <div className="flex justify-between items-center pb-4 border-b border-gray-200 text-sm">
                             <span>Subtotal:</span>
-                            <span>${subtotal}</span>
+                            <span>${subtotal.toFixed(2)}</span>
                         </div>
 
                         <div className="flex justify-between items-center py-4 border-b border-gray-200 text-sm">
@@ -143,7 +189,7 @@ function Cart() {
 
                         <div className="flex justify-between items-center py-4 text-sm">
                             <span>Total:</span>
-                            <span>${total}</span>
+                            <span>${total.toFixed(2)}</span>
                         </div>
 
                         <button onClick={() => navigate("/checkout")}
