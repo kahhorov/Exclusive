@@ -22,7 +22,6 @@ function CustomNavbar() {
     return (
         <nav className='flex items-center gap-4 py-4 px-4 
         container justify-between'>
-            {/* Logo */}
             <h1 className='font-black !text-xl sm:!text-2xl'>Exclusive</h1>
 
             <ul className='hidden lg:flex gap-6 !p-0 !m-0'>
@@ -61,7 +60,6 @@ function CustomNavbar() {
                     <IoMenu size={26} />
                 </button>
             </div>
-            {/* responsive mobile */}
             <Drawer placement='left' size='xs' open={open} onClose={() => setOpen(false)}>
                 <Drawer.Header>
                     <Drawer.Title className='font-black'>Exclusive</Drawer.Title>

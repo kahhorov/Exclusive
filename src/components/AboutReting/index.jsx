@@ -2,17 +2,14 @@ import { FaInstagram } from 'react-icons/fa6'
 import { RiLinkedinLine } from "react-icons/ri";
 import { CiTwitter } from "react-icons/ci";
 
-// 
 import Img1 from '../../assets/svg/icon1.svg'
 import Img2 from '../../assets/svg/icon2.svg'
 import Img3 from '../../assets/svg/icon3.svg'
 import Img4 from '../../assets/svg/icon4.svg'
-// 
 import wImg1 from '../../assets/w1.png'
 import wImg2 from '../../assets/w2.png'
 import wImg3 from '../../assets/w3.png'
 import dot from '../../assets/svg/dot.svg'
-// 
 import iconDelivery from "../../assets/icon-delivery.png"
 import iconService from "../../assets/icon-service.png"
 import iconSecure from "../../assets/icon-secure.png"

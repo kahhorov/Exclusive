@@ -42,6 +42,13 @@ export default function ProductDetaill() {
             if (data.properties?.size?.length > 0) {
                 setSelectedSize(data.properties.size[0]);
             }
+
+            const saved = JSON.parse(localStorage.getItem(`selected_${id}`));
+            if (saved) {
+                if (saved.color) setSelectedColor(saved.color);
+                if (saved.size) setSelectedSize(saved.size);
+                if (saved.qty) setQty(saved.qty);
+            }
         } catch (err) {
             setError("Mahsulot topilmadi yoki xatolik yuz berdi.");
             console.log(err);
@@ -102,6 +109,11 @@ export default function ProductDetaill() {
                 count: qty,
                 properties,
             });
+            localStorage.setItem(`selected_${id}`, JSON.stringify({
+                color: selectedColor,
+                size: selectedSize,
+                qty,
+            }));
             refreshCart();
             toast.success("Savatga qo'shildi");
             navigate("/cart");
@@ -142,7 +154,6 @@ export default function ProductDetaill() {
         <div className="border-gray-300 border-t">
             <div className="container px-4 py-10 lg:py-20">
 
-                {/* Breadcrumb */}
                 <Breadcrumb className="text-sm">
                     <Breadcrumb.Item><Link to="/" className="!text-gray-500 hover:!text-black">Home</Link></Breadcrumb.Item>
                     {product.category?.title && (
@@ -153,7 +164,6 @@ export default function ProductDetaill() {
 
                 <div className="grid grid-cols-1 gap-10 pt-10 lg:grid-cols-[7fr_4fr] lg:gap-16 lg:pt-20">
 
-                    {/* Rasmlar */}
                     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-start lg:gap-6">
 
                         <div className="flex flex-wrap gap-3 sm:flex-col sm:flex-nowrap">

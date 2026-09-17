@@ -18,6 +18,7 @@ const colorCodes = {
 
 function Explore() {
     const [newProducts, setNewProducts] = useState([])
+    const [num, setNum] = useState(16)
 
     async function getProducts() {
         try {
@@ -33,12 +34,20 @@ function Explore() {
         getProducts()
     }, [])
 
+    function handleAll() {
+        const n = newProducts?.length - 8
+        setNum(n)
+        if (num == newProducts?.length - 8) {
+            setNum(16)
+        }
+    }
+
     return (
         <div className='py-10'>
             <Animate text="Our Products" minwidth={5} />
             <SectionBanner text="Explore Our Products" />
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 py-6">
-                {newProducts?.slice(8).map((p) => {
+                {newProducts?.slice(8, num).map((p) => {
                     return (
                         <Card key={p.id} className='group h-full flex flex-col justify-start items-stretch border-none!'>
                             <ProductImage img={p.pictures?.[0]} alt={p.title} discount={p.discount_percent} productId={p.id} height={250} />
@@ -72,7 +81,7 @@ function Explore() {
                 })}
             </div>
             <div className='w-full text-center py-6'>
-                <CustomButton text="View All Products" width={true} />
+                <button onClick={handleAll} className={`bg-secondary-10 py-2 lg:py-4 lg:px-5 px-3 !rounded-sm !text-white`}> {num !== newProducts.length - 8 ? "View All Products" : "Short Products"}</button>
             </div>
         </div>
     )

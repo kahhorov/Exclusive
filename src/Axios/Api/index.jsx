@@ -33,6 +33,22 @@ export function getList(data) {
     return []
 }
 
+export async function getCartItems() {
+    const res = await api.get("order/cart-items/")
+    const items = getList(res.data)
+
+    return Promise.all(items.map(async (item) => {
+        const productId = item.product?.id || item.product_id || item.product
+        try {
+            const detail = await api.get(`product/detail/?product_id=${productId}`)
+            return { ...item, product: { ...item.product, ...detail.data } }
+        } catch (error) {
+            console.log(error)
+            return item
+        }
+    }))
+}
+
 export async function addToCart(productId) {
     const res = await api.get(`product/detail/?product_id=${productId}`)
     const allProperties = res.data.properties || {}

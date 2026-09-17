@@ -1,8 +1,10 @@
 import { FaRegEye, FaRegHeart } from 'react-icons/fa6'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import api, { addToCart, getImageUrl } from '../../Axios/Api'
+import api, { getImageUrl } from '../../Axios/Api'
 import { useProductCounts } from '../../Context/productContext'
+import ProductModal from '../ProductModal'
+import { useState } from 'react'
 
 function ProductImage({
     img,
@@ -14,7 +16,10 @@ function ProductImage({
     productId
 }) {
     const navigate = useNavigate()
-    const { refreshWishlist, refreshCart } = useProductCounts()
+    const [isOpen, setIsOpen] = useState(false)
+    const { refreshWishlist } = useProductCounts()
+
+
 
     async function postWishlist(id) {
         if (!localStorage.getItem("token")) {
@@ -32,21 +37,7 @@ function ProductImage({
         }
     }
 
-    async function postCart(id) {
-        if (!localStorage.getItem("token")) {
-            toast.warning("Avval tizimga kiring")
-            navigate("/login")
-            return
-        }
-        try {
-            await addToCart(id)
-            refreshCart()
-            toast.success("Savatga qo'shildi")
-        } catch (error) {
-            console.log(error.response?.data || error);
-            toast.error("Xatolik yuz berdi")
-        }
-    }
+
 
     function handleSaveHeart(id, e) {
         e.stopPropagation()
@@ -59,11 +50,7 @@ function ProductImage({
             className="relative w-full shrink-0 p-2 bg-gray-100 flex items-center justify-center overflow-hidden"
             style={{ height }}
         >
-
-            {/* <Link
-            to={`/product/${productId}`}
-            className="absolute inset-0"
-        /> */}
+            <ProductModal isOpen={isOpen} setIsOpen={setIsOpen} productId={productId} />
 
             {isNew && (
                 <span className="absolute top-3 left-3 bg-green100 text-white text-xs px-3 py-1 rounded-sm z-10">
@@ -110,7 +97,7 @@ function ProductImage({
                 onClick={(e) => {
                     e.stopPropagation()
                     e.preventDefault()
-                    postCart(productId)
+                    setIsOpen(true)
                 }}
                 className="absolute bottom-0 left-0 w-full bg-black !text-white py-2 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-linear z-20"
             >

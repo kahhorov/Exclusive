@@ -4,7 +4,7 @@ import { IoTrashOutline } from "react-icons/io5";
 import { Breadcrumb } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import api, { getImageUrl, getList } from "../../Axios/Api";
+import api, { getCartItems, getImageUrl } from "../../Axios/Api";
 import { useProductCounts } from "../../Context/productContext";
 
 
@@ -24,9 +24,7 @@ function Cart() {
             return
         }
         try {
-            const res = await api.get("order/cart-items/")
-            console.log("cart-items javobi:", res.data)
-            setCartItems(getList(res.data))
+            setCartItems(await getCartItems())
         } catch (error) {
             console.log(error);
         }
@@ -56,7 +54,6 @@ function Cart() {
         <div className="border-gray-300 border-t">
             <div className="container py-10">
 
-                {/* Breadcrumb */}
                 <Breadcrumb aria-label="breadcrumb">
                     <Breadcrumb.Item>Home</Breadcrumb.Item>
                     <Breadcrumb.Item>Cart</Breadcrumb.Item>

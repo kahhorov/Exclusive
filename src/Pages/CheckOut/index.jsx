@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Breadcrumb } from 'rsuite'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import api, { getImageUrl, getList } from '../../Axios/Api'
+import { getCartItems, getImageUrl } from '../../Axios/Api'
 import payments from '../../assets/payments.png'
 
 function CheckOut() {
@@ -22,8 +22,7 @@ function CheckOut() {
             return
         }
         try {
-            const res = await api.get("order/cart-items/")
-            setCartItems(getList(res.data))
+            setCartItems(await getCartItems())
         } catch (error) {
             console.log(error);
         }
@@ -37,7 +36,6 @@ function CheckOut() {
         <div className='border-gray-300 border-t'>
             <div className="container py-10">
 
-                {/* Breadcrumb */}
                 <Breadcrumb aria-label="breadcrumb">
                     <Breadcrumb.Item>Account /</Breadcrumb.Item>
                     <Breadcrumb.Item>My Account /</Breadcrumb.Item>

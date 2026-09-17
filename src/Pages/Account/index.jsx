@@ -45,7 +45,6 @@ function Account() {
         <div className='border-gray-300 border-t'>
             <div className="container py-10">
 
-                {/* Breadcrumb */}
                 <div className="flex justify-between items-center">
                     <Breadcrumb aria-label="breadcrumb" className='!mb-0'>
                         <Breadcrumb.Item>Home</Breadcrumb.Item>
@@ -58,7 +57,6 @@ function Account() {
 
                 <div className="flex flex-col lg:flex-row gap-10 lg:gap-24 py-16">
 
-                    {/* leftBar */}
                     <div className="w-full lg:max-w-[200px] flex flex-col gap-6">
                         {sidebarLinks.map((s) => (
                             <div key={s.id}>
