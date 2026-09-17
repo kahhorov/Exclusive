@@ -1,7 +1,6 @@
 
 import Animate from '../Animate'
 import SectionBanner from '../SectionBanner'
-import { products } from '../../Data'
 import api, { getImageUrl } from '../../Axios/Api'
 import { useEffect, useState } from 'react'
 

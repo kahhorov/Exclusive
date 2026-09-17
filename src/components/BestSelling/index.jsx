@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SectionBanner from '../SectionBanner'
 import Animate from '../Animate'
-// import { products } from '../../Data'
 import { Card, Text } from 'rsuite';
 import Rating from '../Rating';
 import ProductImage from '../ProductImage';
@@ -9,8 +8,6 @@ import api from '../../Axios/Api';
 
 
 function BestSelling() {
-    // const bestSelling = products?.filter((p) => p.category === "Best-Selling")
-
 
     const [products, setProducts] = useState([])
 

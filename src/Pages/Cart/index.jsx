@@ -4,7 +4,8 @@ import { IoTrashOutline } from "react-icons/io5";
 import { Breadcrumb } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import api, { getImageUrl } from "../../Axios/Api";
+import api, { getImageUrl, getList } from "../../Axios/Api";
+import { useProductCounts } from "../../Context/productContext";
 
 
 function Cart() {
@@ -14,6 +15,7 @@ function Cart() {
     const total = subtotal + shipping;
 
     const navigate = useNavigate()
+    const { refreshCart } = useProductCounts()
 
     async function getCart() {
         if (!localStorage.getItem("token")) {
@@ -23,7 +25,8 @@ function Cart() {
         }
         try {
             const res = await api.get("order/cart-items/")
-            setCartItems(res.data || [])
+            console.log("cart-items javobi:", res.data)
+            setCartItems(getList(res.data))
         } catch (error) {
             console.log(error);
         }
@@ -33,6 +36,7 @@ function Cart() {
         try {
             await api.delete(`order/remove-from-cart?cart_item_id=${id}`)
             setCartItems(cartItems.filter((item) => item.id !== id))
+            refreshCart()
             toast.info("Savatdan o'chirildi")
         } catch (error) {
             console.log(error);
@@ -82,7 +86,7 @@ function Cart() {
                             </button>
 
                             <img
-                                src={getImageUrl(item.product?.pictures?.[0])}
+                                src={getImageUrl(item.product?.pictures)}
                                 alt={item.product?.title}
                                 className="w-[60px] h-[60px] object-contain"
                             />

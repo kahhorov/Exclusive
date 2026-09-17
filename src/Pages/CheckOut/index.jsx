@@ -1,32 +1,37 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Breadcrumb } from 'rsuite'
-import img1 from '../../assets/1.png'
-import img3 from '../../assets/3.png'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import api, { getImageUrl, getList } from '../../Axios/Api'
 import payments from '../../assets/payments.png'
-
-const products = [
-    {
-        id: 1,
-        img: img3,
-        title: "LCD Monitor",
-        price: 650,
-        pCount: 1,
-    },
-    {
-        id: 2,
-        img: img1,
-        title: "H1 Gamepad",
-        price: 1100,
-        pCount: 1,
-    },
-]
 
 function CheckOut() {
     const [payment, setPayment] = useState("cash")
+    const [cartItems, setCartItems] = useState([])
+    const navigate = useNavigate()
 
-    const subtotal = products.reduce((sum, item) => sum + item.price * item.pCount, 0)
+    const getPrice = (item) => Number(item.product?.discount_price || item.product?.price || 0)
+    const subtotal = cartItems.reduce((sum, item) => sum + getPrice(item) * item.quantity, 0)
     const shipping = 0
     const total = subtotal + shipping
+
+    async function getCart() {
+        if (!localStorage.getItem("token")) {
+            toast.warning("Avval tizimga kiring")
+            navigate("/login")
+            return
+        }
+        try {
+            const res = await api.get("order/cart-items/")
+            setCartItems(getList(res.data))
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        getCart()
+    }, [])
 
     return (
         <div className='border-gray-300 border-t'>
@@ -147,24 +152,27 @@ function CheckOut() {
                     <div className="w-full max-w-[425px] pt-[45px]">
 
                         <div className="flex flex-col gap-[22px] mb-[22px]">
-                            {products.map((item) => (
+                            {cartItems.length === 0 && (
+                                <p className="text-sm text-gray-400">Savat bo'sh</p>
+                            )}
+                            {cartItems.map((item) => (
                                 <div key={item.id} className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <img
-                                            src={item.img}
-                                            alt={item.title}
+                                            src={getImageUrl(item.product?.pictures)}
+                                            alt={item.product?.title}
                                             className="w-[40px] h-[40px] object-contain"
                                         />
-                                        <p className="text-sm">{item.title}</p>
+                                        <p className="text-sm">{item.product?.title}</p>
                                     </div>
-                                    <p className="text-sm">${item.price * item.pCount}</p>
+                                    <p className="text-sm">${(getPrice(item) * item.quantity).toFixed(2)}</p>
                                 </div>
                             ))}
                         </div>
 
                         <div className="flex justify-between items-center pb-3 border-b border-gray-400 text-sm">
                             <span>Subtotal:</span>
-                            <span>${subtotal}</span>
+                            <span>${subtotal.toFixed(2)}</span>
                         </div>
 
                         <div className="flex justify-between items-center py-3 border-b border-gray-400 text-sm">
@@ -174,7 +182,7 @@ function CheckOut() {
 
                         <div className="flex justify-between items-center py-3 text-sm">
                             <span>Total:</span>
-                            <span>${total}</span>
+                            <span>${total.toFixed(2)}</span>
                         </div>
 
                         <div className="flex flex-col gap-5 mt-3">

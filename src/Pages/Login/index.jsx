@@ -3,9 +3,11 @@ import sideImage from '../../assets/side-image.png'
 import { toast } from 'react-toastify'
 import api from '../../Axios/Api'
 import { useNavigate } from 'react-router-dom'
+import { useProductCounts } from '../../Context/productContext'
 
 function Login() {
     const navigate = useNavigate()
+    const { refreshCounts } = useProductCounts()
     const [form, setForm] = useState({ email: "", password: "" })
 
     const handleChange = (e) => {
@@ -21,10 +23,10 @@ function Login() {
                 password: form.password,
             });
             console.log(res);
+            localStorage.setItem("token", res.data.access);
+            refreshCounts();
             toast.success("Muvaffaqiyatli kirdingiz");
             navigate("/")
-
-            localStorage.setItem("token", res.data.access);
         } catch (error) {
             const data = error.response?.data;
 

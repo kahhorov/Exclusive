@@ -1,7 +1,8 @@
 import { FaRegEye, FaRegHeart } from 'react-icons/fa6'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import api, { getImageUrl } from '../../Axios/Api'
+import api, { addToCart, getImageUrl } from '../../Axios/Api'
+import { useProductCounts } from '../../Context/productContext'
 
 function ProductImage({
     img,
@@ -13,6 +14,7 @@ function ProductImage({
     productId
 }) {
     const navigate = useNavigate()
+    const { refreshWishlist, refreshCart } = useProductCounts()
 
     async function postWishlist(id) {
         if (!localStorage.getItem("token")) {
@@ -22,6 +24,7 @@ function ProductImage({
         }
         try {
             await api.post(`action/add-to-wishlist/?product_id=${id}`)
+            refreshWishlist()
             toast.success("Sevimlilarga qo'shildi")
         } catch (error) {
             console.log(error);
@@ -36,14 +39,11 @@ function ProductImage({
             return
         }
         try {
-            await api.post("order/add-to-cart/", {
-                product_id: id,
-                quantity: 1,
-                count: 1
-            })
+            await addToCart(id)
+            refreshCart()
             toast.success("Savatga qo'shildi")
         } catch (error) {
-            console.log(error);
+            console.log(error.response?.data || error);
             toast.error("Xatolik yuz berdi")
         }
     }

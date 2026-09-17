@@ -4,16 +4,13 @@ import ProductImage from '../ProductImage';
 import api from '../../Axios/Api';
 import { useEffect, useState } from 'react';
 
-function CustomCard({ products, category }) {
-    const filterProducts = products?.filter(
-        (p) => p.category === category
-    );
+function CustomCard() {
     const [newProducts, setNewProducts] = useState([])
 
     async function getProducts() {
         try {
             const res = await api.get("product/list/")
-            setNewProducts(res.data)
+            setNewProducts(res.data || [])
 
         } catch (error) {
             console.log(error);

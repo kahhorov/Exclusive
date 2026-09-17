@@ -2,13 +2,15 @@ import Animate from "../../components/Animate"
 import OutlineButton from "../../components/OutlineButton"
 import Products from "../../components/products"
 import { IoCartOutline, IoTrashOutline } from "react-icons/io5"
-import api, { getImageUrl } from "../../Axios/Api"
+import api, { addToCart, getImageUrl } from "../../Axios/Api"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { Link, useNavigate } from "react-router-dom"
+import { useProductCounts } from "../../Context/productContext"
 
 function Wishlist() {
     const navigate = useNavigate()
+    const { refreshWishlist, refreshCart } = useProductCounts()
     const [wishlist, setWishlist] = useState([])
 
     async function getWishlist() {
@@ -29,6 +31,7 @@ function Wishlist() {
         try {
             await api.delete(`action/remove-from-wishlist/?product_id=${id}`)
             setWishlist(wishlist.filter((p) => p.id !== id))
+            refreshWishlist()
             toast.info("Sevimlilardan o'chirildi")
         } catch (error) {
             console.log(error);
@@ -38,14 +41,11 @@ function Wishlist() {
 
     async function addCart(id) {
         try {
-            await api.post("order/add-to-cart/", {
-                product_id: id,
-                quantity: 1,
-                count: 1
-            })
+            await addToCart(id)
+            refreshCart()
             toast.success("Savatga qo'shildi")
         } catch (error) {
-            console.log(error);
+            console.log(error.response?.data || error);
             toast.error("Xatolik yuz berdi")
         }
     }
@@ -53,15 +53,12 @@ function Wishlist() {
     async function moveAllToBag() {
         if (wishlist.length === 0) return
         try {
-            await Promise.all(wishlist.map((p) => api.post("order/add-to-cart/", {
-                product_id: p.id,
-                quantity: 1,
-                count: 1
-            })))
+            await Promise.all(wishlist.map((p) => addToCart(p.id)))
+            refreshCart()
             toast.success("Barchasi savatga qo'shildi")
             navigate("/cart")
         } catch (error) {
-            console.log(error);
+            console.log(error.response?.data || error);
             toast.error("Xatolik yuz berdi")
         }
     }
@@ -88,15 +85,15 @@ function Wishlist() {
                                 <div className="relative flex  w-full h-[230px] items-center justify-center overflow-hidden rounded-xl bg-gray-100 p-5">
 
                                     <Link to={`/product/detail/${p.id}`} className="h-full w-full">
-                                    <img
-                                        src={getImageUrl(p.pictures?.[0])}
-                                        alt={p.title}
-                                        className="
+                                        <img
+                                            src={getImageUrl(p.pictures)}
+                                            alt={p.title}
+                                            className="
                 h-full w-full object-contain
                 transition-all duration-500 ease-out
                 group-hover:scale-105
             "
-                                    />
+                                        />
                                     </Link>
 
                                     {p.discount_percent > 0 && (
@@ -112,27 +109,24 @@ function Wishlist() {
                                         </span>
                                     )}
 
-                                    {/* Trash Button */}
                                     <button
                                         onClick={() => removeWishlist(p.id)}
                                         className="
-                                                   absolute right-2 top-2 z-20
-                                                   flex h-9 w-9 items-center justify-center
-                                                   !rounded-full bg-white
-                                                   text-gray-800 shadow-md
-                                                   opacity-0 scale-75
-                                                   translate-y-[-6px]
-                                                   transition-all duration-300 ease-out
-                                                   group-hover:opacity-100
-                                                   group-hover:scale-100
-                                                   group-hover:translate-y-0                                   
-                                                   hover:bg-gray-50
-                                                   hover:scale-110 active:scale-95"
+    absolute right-2 top-2 z-20
+    flex h-9 w-9 items-center justify-center
+    !rounded-full bg-white
+    text-gray-800 shadow-md
+    opacity-0 scale-75
+    translate-y-[-6px]
+    transition-all duration-300 ease-out
+    group-hover:opacity-100
+    group-hover:scale-100
+    group-hover:translate-y-0                             hover:bg-gray-50
+    hover:scale-110 active:scale-95"
                                     >
                                         <IoTrashOutline className="text-[18px]" />
                                     </button>
 
-                                    {/* Add To Cart */}
                                     <button
                                         onClick={() => addCart(p.id)}
                                         className="
@@ -158,7 +152,6 @@ function Wishlist() {
                                     </button>
                                 </div>
 
-                                {/* Product Info */}
                                 <div className="px-1 pt-4 pb-2">
                                     <p className="truncate text-[14px] font-medium text-gray-900">
                                         {p.title}

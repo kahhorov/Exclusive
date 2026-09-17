@@ -4,6 +4,7 @@ import { CiHeart, CiSearch } from 'react-icons/ci'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Drawer } from 'rsuite'
 import CustomMenu from '../CustomMenu'
+import { useProductCounts } from '../../Context/productContext'
 
 const navLinks = [
     { id: 1, path: "/", text: "Home" },
@@ -16,7 +17,7 @@ function CustomNavbar() {
     const [open, setOpen] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
-
+    const { wishlistCount, cartCount } = useProductCounts()
 
     return (
         <nav className='flex items-center gap-4 py-4 px-4 
@@ -40,14 +41,18 @@ function CustomNavbar() {
                 {location.pathname !== "/sign-up" && location.pathname !== "/login" ?
                     <>
                         <button onClick={() => navigate("wishlist")}><CiHeart size={22} />
-                            <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 py-[.100rem] text-xs font-medium text-red-100 absolute top-3">
-                                99+
-                            </span>
+                            {wishlistCount > 0 && (
+                                <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 py-[.100rem] text-xs font-medium text-red-100 absolute top-3">
+                                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                                </span>
+                            )}
                         </button>
                         <button onClick={() => navigate("cart")}><IoCartOutline size={22} />
-                            <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 py-[.100rem] text-xs font-medium text-red-100 absolute top-3">
-                                99+
-                            </span>
+                            {cartCount > 0 && (
+                                <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 py-[.100rem] text-xs font-medium text-red-100 absolute top-3">
+                                    {cartCount > 99 ? "99+" : cartCount}
+                                </span>
+                            )}
                         </button>
                         <CustomMenu />
                     </>
